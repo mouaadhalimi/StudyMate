@@ -1,13 +1,13 @@
 # StudyMate – AI-Powered Study Assistant (RAG Backend)
 
 **StudyMate** is an open-source, intelligent backend platform designed to help **students and independent learners** manage, explore, and understand their study materials more effectively using **Retrieval-Augmented Generation (RAG)** technology.  
-It enables users to upload documents, search semantically through their content, and receive AI-generated, context-aware answers — all running locally and privately, without external API costs.
+It enables users to upload documents, search semantically through their content, and receive AI-generated, context-aware answers, all running locally and privately, without external API costs.
 
 ---
 
 ## Overview
 
-StudyMate offers a **personalized study experience** through an intuitive backend that organizes knowledge in “RAGs” — **Retrieval-Augmented Knowledge Spaces**.  
+StudyMate offers a **personalized study experience** through an intuitive backend that organizes knowledge in “RAGs”, **Retrieval-Augmented Knowledge Spaces**.  
 Each RAG combines your uploaded study documents with advanced natural language search and AI reasoning capabilities.
 
 After logging in securely, users can:
@@ -17,7 +17,7 @@ After logging in securely, users can:
 - Review past conversations and discussions tied to each RAG.  
 - Share selected RAGs with other users for collaborative learning.
 
-All processing — from text extraction to embedding generation and retrieval — is done locally, ensuring **privacy, reproducibility, and zero dependence on commercial APIs**.
+All processing, from text extraction to embedding generation and retrieval, is done locally, ensuring **privacy, reproducibility, and zero dependence on commercial APIs**.
 
 ---
 
@@ -229,7 +229,7 @@ Both setups create a self-contained backend environment with persistent storage.
 
 ## License
 
-**MIT License** — you are free to use, modify, and distribute StudyMate for personal, academic, or commercial purposes.
+**MIT License**, you are free to use, modify, and distribute StudyMate for personal, academic, or commercial purposes.
 
 ---
 
@@ -247,4 +247,4 @@ StudyMate integrates a rich open-source ecosystem:
 
 ---
 
-**StudyMate** transforms your study materials into an interactive, searchable knowledge space — helping you learn, recall, and understand information with the assistance of modern AI.
+**StudyMate** transforms your study materials into an interactive, searchable knowledge space, helping you learn, recall, and understand information with the assistance of modern AI.
