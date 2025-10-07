@@ -1,290 +1,250 @@
-# StudyMate – End-to-End Retrieval-Augmented Generation (RAG) Backend
+# StudyMate – AI-Powered Study Assistant (RAG Backend)
 
-**StudyMate** is a robust, open-source, production-ready **Retrieval-Augmented Generation (RAG)** backend designed to provide a full local, private, and cost-free solution for document ingestion, semantic search, and contextual AI-assisted answering.  
-Built using **FastAPI**, **SQLAlchemy**, **Sentence-Transformers**, **ChromaDB**, **HNSWlib**, and **Ollama**, it combines traditional backend engineering with modern AI capabilities.
-
----
-
-##  Overview
-
-StudyMate empowers developers and organizations to build **intelligent assistants**, **enterprise knowledge bases**, or **educational tools** that can understand, search, and answer questions from user-provided documents — all locally, without sending data to external APIs.
-
-Each user has isolated document sets, embeddings, and vector databases, ensuring both **privacy** and **multi-tenant scalability**.
+**StudyMate** is an open-source, intelligent backend platform designed to help **students and independent learners** manage, explore, and understand their study materials more effectively using **Retrieval-Augmented Generation (RAG)** technology.  
+It enables users to upload documents, search semantically through their content, and receive AI-generated, context-aware answers — all running locally and privately, without external API costs.
 
 ---
 
-##  Features
+## Overview
 
-### Core Capabilities
-- **Multi-User Support:** Isolated RAG environments per user (secured with JWT-based authentication).  
-- **Document Ingestion:** Upload, extract, and parse PDFs, DOCX, and TXT files.  
-- **Layout Detection & OCR:** YOLOv8 model for document layout structure + Tesseract OCR for text recognition.  
-- **Text Preprocessing:** Removes redundant headers/footers, merges small paragraphs, and normalizes text content.  
-- **Chunking Engine:** Context-aware text splitting for improved embedding performance.  
-- **Vector Storage:** Local, persistent vector database using **ChromaDB** + approximate nearest neighbor index via **HNSWlib**.  
-- **Semantic Search:** Efficient retrieval of document snippets relevant to a given query.  
-- **Cross-Encoder Reranking:** Sentence-Transformers’ CrossEncoder model to improve relevance ranking.  
-- **Local Answer Generation:** Uses **Ollama** to generate contextual answers based on retrieved document content.  
+StudyMate offers a **personalized study experience** through an intuitive backend that organizes knowledge in “RAGs” — **Retrieval-Augmented Knowledge Spaces**.  
+Each RAG combines your uploaded study documents with advanced natural language search and AI reasoning capabilities.
 
-### System & Dev Features
-- FastAPI with modular router design.
-- Centralized Loguru logging (with rotation, file + console).  
-- Secure middlewares (CORS, trusted hosts, security headers).  
-- Configurable chunk size, embedding model, and tokenizer.  
-- Scalable multiprocessing ingestion via YOLO Model Server.  
-- Fully open-source and free to deploy (no API keys required).
+After logging in securely, users can:
+- Create multiple RAGs (collections of related documents).  
+- Upload course notes, articles, or research papers.  
+- Ask complex questions and receive precise, source-grounded answers.  
+- Review past conversations and discussions tied to each RAG.  
+- Share selected RAGs with other users for collaborative learning.
+
+All processing — from text extraction to embedding generation and retrieval — is done locally, ensuring **privacy, reproducibility, and zero dependence on commercial APIs**.
 
 ---
 
-##  Architecture
+## Key Features
+
+###  Intelligent RAG Engine
+- Create, organize, and manage custom knowledge spaces.
+- Automatically process and embed uploaded documents (PDF, DOCX, TXT).  
+- Perform semantic search to instantly locate relevant text segments.  
+- Retrieve context-aware AI answers grounded in your uploaded materials.
+
+###  Secure Multi-User System
+- User authentication and JWT-based session management.  
+- Each user’s data (documents, embeddings, and discussion history) remains isolated.  
+- Token-based authorization protects every API route.
+
+###  Full RAG Lifecycle
+- **Create RAG:** Provide a name, optional description, and documents. StudyMate handles text extraction, chunking, embedding, and storage.  
+- **Modify RAG:** Admins (creators) can edit or add new materials; updates automatically propagate to shared users.  
+- **Delete RAG:** Cleanly removes embeddings, documents, and related discussions. Shared RAGs are removed only from the user’s dashboard.  
+- **Share RAG:** Share access with specific users by email; admins control permissions and ownership.  
+- **Admin Control:** If an admin deletes their own RAG, ownership transfers automatically to the next user with shared access.
+
+###  Personalized AI Discussions
+- Each user maintains private chat sessions per RAG.  
+- Conversations are stored locally and isolated from other users.  
+- Users can revisit prior discussions to track study progress.
+
+---
+
+## System Architecture
 
 ```
-                ┌──────────────────────────────┐
-                │        File Upload           │
-                │ (PDF, DOCX, TXT Documents)   │
-                └──────────────┬───────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  LayoutExtractor (YOLOv8) │
-                  │ + OCR via Tesseract       │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  BlockProcessor          │
-                  │ (Cleans headers/footers) │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  ChunkBuilder            │
-                  │ (Merge & split blocks)   │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  Indexer (Embed + Store) │
-                  │ (ChromaDB + HNSWlib)     │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  Searcher (Semantic ANN) │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  Reranker (CrossEncoder) │
-                  └─────────────────────────┘
-                               │
-                               ▼
-                  ┌─────────────────────────┐
-                  │  Answerer (Ollama LLM)   │
-                  └─────────────────────────┘
+┌───────────────────────────────┐
+│           User Login          │
+│ (Email + Password Auth via JWT)│
+└───────────────┬───────────────┘
+                │
+                ▼
+         ┌──────────────┐
+         │   Dashboard  │
+         └──────┬───────┘
+                │
+  ┌─────────────┼──────────────────────────────────────────────────────┐
+  │             │                                                      │
+  ▼             ▼                                                      ▼
+Create RAG   Manage RAGs (Edit/Delete/Share)                    AI Chat / Search
+│            │                                                  │
+│            ▼                                                  ▼
+│     ┌────────────┐                                   ┌────────────────────────┐
+│     │ Embeddings │ ← Sentence-Transformers           │ Local LLM (Ollama)     │
+│     └────────────┘   + ChromaDB + HNSWlib            │ Contextual Answers     │
+│                                                         Based on User Docs     │
+└────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+### Core Technologies
+| Component | Technology | Description |
+|------------|-------------|-------------|
+| **Backend Framework** | FastAPI | High-performance web framework |
+| **Database Layer** | SQLAlchemy + Alembic | ORM and migrations |
+| **Vector Search** | ChromaDB + HNSWlib | Embedding storage and ANN search |
+| **Embeddings** | Sentence-Transformers | Converts text to numerical vectors |
+| **LLM Runtime** | Ollama (Llama3) | Local large language model |
+| **OCR + Layout** | Tesseract + YOLOv8 | PDF parsing and text detection |
+| **Logging** | Loguru | Structured logging with rotation |
 
 ---
 
-##  Repository Structure
+## Repository Structure
 
 ```
 StudyMate/
 ├── src/
-│   ├── api/                       # FastAPI application
-│   │   ├── routers/               # Routes: auth, rags, search, docs, discussions
-│   │   ├── db.py                  # SQLAlchemy base & engine
-│   │   ├── deps.py                # JWT, hashing, auth utilities
-│   │   ├── models.py              # ORM Models: User, RAG, Document, Discussion, etc.
-│   │   └── main.py                # API app initialization
-│   ├── core/                      # Core logic (logging, processing, chunking)
-│   ├── modules/                   # OCR, YOLOv8 model server, entity extraction, reranking
-│   ├── pipeline/                  # Ingestor, Indexer, Searcher, Answerer
-│   └── main.py                    # CLI entrypoint
-│
-├── config/config.yaml             # Configuration (paths, models, chunking)
-├── models/yolov8n-doclaynet.pt    # YOLOv8 model (for layout detection)
-├── storage/                       # Logs, data, and vector DBs (auto-generated)
-├── requirements.txt
-└── README.md
+│   ├── api/              # FastAPI app: routers (auth, rags, search, docs, discussions)
+│   ├── core/             # Logging, text normalization, and chunking utilities
+│   ├── modules/          # OCR, YOLOv8 layout model, embedding, reranking
+│   ├── pipeline/         # Ingestion, indexing, semantic search, and answer generation
+│   └── main.py           # CLI entrypoint for RAG operations
+├── config/               # Configuration files (models, paths, thresholds)
+├── storage/              # Logs, uploaded data, and vector database
+├── docker-compose.yml    # Local deployment setup
+├── requirements.txt      # Dependencies list
+└── README.md             # Documentation
 ```
 
 ---
 
-##  Installation
+## Installation & Setup
 
-### 1. Clone the repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/<your-username>/StudyMate.git
 cd StudyMate
 ```
 
-### 2. Create a virtual environment
+### 2. Create a Virtual Environment
 ```bash
 python -m venv .venv
-source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Install and run Ollama
-Ollama is required to run local LLMs such as Llama3:
+### 4. Install Ollama and Pull the Model
+Ollama is required to run local LLMs (e.g., Llama3):
 ```bash
 ollama pull llama3
 ```
 
-### 5. Ensure Tesseract is installed
+### 5. Verify Tesseract Installation
 ```bash
 tesseract --version
 ```
 
 ---
 
-##  Running the FastAPI API
+## Running the Backend Server
 
-### Start server
+Start the FastAPI development server:
 ```bash
 uvicorn src.api.main:app --reload
 ```
 
-### Access docs
+Access the interactive API documentation at:
 ```
 http://localhost:8000/docs
 ```
 
 ---
 
-##  Authentication Endpoints
+## API Overview
+
+### Authentication Routes
 
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
 | `POST` | `/auth/signup` | Register a new user |
-| `POST` | `/auth/login` | Authenticate and obtain JWT token |
+| `POST` | `/auth/login` | Login and obtain JWT token |
 | `POST` | `/auth/change-password` | Change user password |
 
----
-
-##  RAG API Endpoints
+### RAG Management Routes
 
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
-| `POST` | `/rags/{rag_id}/docs/upload` | Upload document to RAG |
-| `GET`  | `/rags/{rag_id}/discussions` | Retrieve discussions |
+| `POST` | `/rags/create` | Create a new RAG |
+| `POST` | `/rags/{rag_id}/docs/upload` | Upload documents to RAG |
+| `DELETE` | `/rags/{rag_id}` | Delete RAG |
+| `POST` | `/rags/{rag_id}/share` | Share RAG with another user |
 | `POST` | `/rags/{rag_id}/search` | Perform semantic search |
 | `POST` | `/rags/{rag_id}/answer` | Generate contextual answer |
+| `GET` | `/rags/{rag_id}/discussions` | Retrieve user’s personal discussions |
 
 ---
 
-##  CLI Usage
-
-```bash
-python -m src.main ingest <user_id>
-python -m src.main index <user_id>
-python -m src.main search <user_id> "Explain HCL"
-python -m src.main answer <user_id> "Summarize uploaded PDF"
-```
-
-### CLI Stages
-| Stage | Description |
-|--------|--------------|
-| `ingest` | Extracts text + layout, cleans, chunks |
-| `index` | Generates embeddings and stores vectors |
-| `search` | Finds most relevant chunks using ANN |
-| `answer` | Generates a grounded answer using LLM |
-
----
-
-##  Key Components Explained
-
-### **LayoutExtractor**
-- Uses YOLOv8 for block segmentation and Tesseract for text extraction.
-- Processes PDFs and DOCX files using multiprocessing.
-
-### **BlockProcessor**
-- Removes repeated headers/footers and noisy patterns.
-- Merges small text blocks to form meaningful units.
-
-### **ChunkBuilder**
-- Splits clean text into context-aware chunks suitable for embedding models.
-
-### **Indexer**
-- Encodes chunks with Sentence-Transformers.
-- Stores embeddings in ChromaDB + HNSWlib for efficient search.
-
-### **Searcher**
-- Performs vector similarity search across user-specific embeddings.
-- Retrieves most semantically relevant document parts.
-
-### **Reranker**
-- Uses CrossEncoder model for improved ranking precision.
-
-### **Answerer**
-- Builds context and queries local Ollama LLM for natural-language answers.
-
----
-
-##  Logging
-
-- All logs are managed via Loguru.
-- Default log file: `storage/logs/logging_project.log`
-- Automatic log rotation (1MB max, keep 5 files)
-- Logs contain ingestion progress, errors, and search traces.
-
----
-
-## Environment Variables
+## Environment Configuration
 
 | Variable | Default | Description |
 |-----------|----------|-------------|
-| `DATABASE_URL` | `sqlite:///./rag.db` | SQLAlchemy database path |
-| `RAG_JWT_SECRET` | `dev-secret` | JWT signing key |
-| `JWT_TTL_MIN` | `60` | Token expiration (minutes) |
-| `DATA_DIR` | `storage/data` | Uploaded files directory |
-| `VECTOR_DIR` | `storage/vectors` | Chroma/HNSW vector database |
+| `DATABASE_URL` | `sqlite:///./rag.db` | Database connection URI |
+| `RAG_JWT_SECRET` | `dev-secret` | JWT signing secret |
+| `DATA_DIR` | `storage/data` | Directory for uploaded files |
+| `VECTOR_DIR` | `storage/vectors` | Directory for vector databases |
 | `OLLAMA_API_URL` | `http://localhost:11434` | Local Ollama endpoint |
 
 ---
 
-##  Deployment
+## Logging & Monitoring
 
-### Docker
+StudyMate uses **Loguru** for logging.  
+Logs capture ingestion progress, embedding status, semantic search operations, and user actions.
+
+Default log path:
+```
+storage/logs/logging_project.log
+```
+Logs automatically rotate when they exceed the configured size limit.
+
+---
+
+## Deployment Options
+
+###  Docker Deployment
 ```bash
 docker-compose up --build
 ```
 
-### Kubernetes
+###  Kubernetes Deployment
 ```bash
 kubectl apply -f k8s/
 ```
 
----
-
-##  Roadmap
-
-- [ ] Add streaming answers via SSE  
-- [ ] Multilingual OCR support  
-- [ ] Frontend dashboard (Next.js)  
-- [ ] User analytics and admin panel  
-- [ ] Vector DB abstraction layer (FAISS, Milvus)  
+Both setups create a self-contained backend environment with persistent storage.
 
 ---
 
-##  License
+## Roadmap
 
-This project is licensed under the **MIT License**.  
-Feel free to use, modify, and distribute for personal or commercial purposes.
+- [ ] Add web-based student dashboard (Next.js)  
+- [ ] Implement real-time chat with streaming responses  
+- [ ] Support multilingual OCR and question answering  
+- [ ] Integrate FAISS and Milvus as alternative vector databases  
+- [ ] Add metrics dashboard for learning analytics  
 
 ---
 
-##  Acknowledgements
+## License
 
-- [FastAPI](https://fastapi.tiangolo.com/)
-- [Sentence-Transformers](https://www.sbert.net/)
-- [ChromaDB](https://docs.trychroma.com/)
-- [HNSWlib](https://github.com/nmslib/hnswlib)
-- [Ollama](https://ollama.ai)
-- [YOLOv8](https://github.com/ultralytics/ultralytics)
-- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)
+**MIT License** — you are free to use, modify, and distribute StudyMate for personal, academic, or commercial purposes.
+
+---
+
+## Acknowledgements
+
+StudyMate integrates a rich open-source ecosystem:
+
+- [FastAPI](https://fastapi.tiangolo.com/)  
+- [Sentence-Transformers](https://www.sbert.net/)  
+- [ChromaDB](https://docs.trychroma.com/)  
+- [HNSWlib](https://github.com/nmslib/hnswlib)  
+- [Ollama](https://ollama.ai)  
+- [YOLOv8](https://github.com/ultralytics/ultralytics)  
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract)  
+
+---
+
+**StudyMate** transforms your study materials into an interactive, searchable knowledge space — helping you learn, recall, and understand information with the assistance of modern AI.
