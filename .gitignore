@@ -1,0 +1,62 @@
+# --- Environment files ---
+.env
+*.env
+.env.*
+
+# --- Python cache & compiled files ---
+__pycache__/
+*.py[cod]
+*.pyo
+
+# --- Virtual environments ---
+venv/
+.env/
+.venv/
+
+# --- Logs & temporary files ---
+*.log
+*.tmp
+*.bak
+
+# --- IDEs & editors ---
+.vscode/
+.idea/
+
+# --- DVC (data version control) cache ---
+.dvc/cache/
+.dvc/tmp/
+*.dvc.lock
+
+# --- Docker ---
+*.pid
+*.tar
+*.img
+*.log
+.docker/
+docker-compose.override.yml
+
+# --- Alembic migrations cache ---
+alembic/versions/__pycache__/
+alembic/versions/*.pyc
+
+# --- Models & data files ---
+models/*.pt
+*.weights
+*.ckpt
+*.bin
+*.npy
+*.csv
+*.jsonl
+db.txt
+
+# --- Kubernetes local configs ---
+k8s/*.yaml.bak
+
+# --- Build artifacts ---
+build/
+dist/
+*.egg-info/
+
+# --- System files ---
+.DS_Store
+Thumbs.db

@@ -1,0 +1,20 @@
+
+paths:
+  data_dir: storage/data
+  chunks_file: storage/chunks.json
+  vector_db: storage/vectors
+models:
+  embedding_model: sentence-transformers/all-MiniLM-L6-v2
+  llm_model: llama2
+tokenizer:
+  model: bert-base-uncased
+chunking:
+  chunk_size: 500
+retrieval:
+  top_k: 20
+  rerank_k: 5
+layout:
+  pdf_dpi: 150
+  score_thresh: 0.5
+ner:
+  model: en_core_web_trf

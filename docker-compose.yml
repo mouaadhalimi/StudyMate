@@ -1,0 +1,34 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    environment:
+      - DATABASE_URL=sqlite:///./rag.db
+      - VECTOR_DIR=storage/vectors
+      - DATA_DIR=storage/data
+      - RAG_JWT_SECRET=dev-secret
+      - OLLAMA_API_URL=http://ollama:11434
+    volumes:
+      - ./storage:/app/storage
+    ports:
+      - "8000:8000"
+    depends_on:
+      - ollama
+    networks:
+      - ragnet
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama       
+    networks:
+      - ragnet
+
+volumes:
+  ollama_data:                         
+
+networks:
+  ragnet:

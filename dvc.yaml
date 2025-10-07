@@ -1,0 +1,14 @@
+
+stages:
+  ingest:
+    cmd: python -m src.main ingest user1
+    deps:
+      - src/pipeline/ingestor.py
+    outs:
+      - storage/chunks.json
+  index:
+    cmd: python -m src.main index user1
+    deps:
+      - src/pipeline/indexer.py
+    outs:
+      - storage/vectors
